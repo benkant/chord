@@ -16,6 +16,6 @@ int key_is_between(int check, int from, int to) {
 }
 
 int key_init(Node *node, int idx) {
-  /* @TODO: used? check all functions all called */
-  return 1;
+  /* @TODO: what is this supposed to do? */
+  return idx;
 }

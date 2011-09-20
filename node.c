@@ -70,9 +70,19 @@ void node_notify(Node *notify_node, Node *check_node) {
 }
 
 void node_fix_fingers(Node *node) {
+  int i;
+  Finger *finger;
+
+  for (i = 0; i < KEY_BITS; i++) {
+    finger = node->finger_table->fingers[i];
+    finger->node = node_find_successor(node, finger->start);
+  }
 }
 
 void node_check_predecessor(Node *node) {
+  if (node->predecessor->state == NODE_STATE_DEAD) {
+    node->predecessor = NULL;
+  }
 }
 
 void node_print(Node *node) {

@@ -4,6 +4,25 @@
 #include "chord_types.h"
 #include "ring.h"
 
+/**
+ * @TODO:
+ * check all functions are called
+ * check memory leaks
+ * "accept list of peers and build a chord ring for these peers"
+ * "print chord topology figure showing node ID locations (see L5 S10)"
+ * "print the content of any node in the ring"
+ * "insert and retrieve documents into/from the network:"
+ *   "a list of documents will be given to the program, and the program should be able
+ *   to allocate these documents to nodes using chord strategies."
+ *   "Design your own hash functions. You may use file names as the input for hashing."
+ * "accept a text query in terms of file name and reply with:"
+ *   "Print all nodes containing answer and the adopted route for transferring the data" or
+ *   "Print a message indicating a query answer is not found"
+ * 
+ * "You need to demonstrate both code and simulation results. Your report should have enough 
+ * sample simulation results to demonstrate that you have met all required specifications and features."
+ */
+
 char* random_string(int length);
 
 int main(int argc, char *argv[]) {
