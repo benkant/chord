@@ -3,6 +3,7 @@
 
 #include "chord_types.h"
 #include "ring.h"
+#include "util.h"
 
 /**
  * @TODO:
@@ -21,15 +22,19 @@
  * 
  * "You need to demonstrate both code and simulation results. Your report should have enough 
  * sample simulation results to demonstrate that you have met all required specifications and features."
+ *
+ * Part III: Reliability
+ * "your program should allow a random number of nodes in joining in, departing, failure etc"
  */
 
 char* random_string(int length);
 
 int main(int argc, char *argv[]) {
   const int NUM_NODES = 10;
-  const int NODE_ID_LENGTH = 10;
   int i;
   char *node_id;
+  char new_node_id[NODE_ID_LENGTH];
+  char *prompt = "Enter a node ID: ";
 
   printf("Starting...\n");
 
@@ -41,6 +46,10 @@ int main(int argc, char *argv[]) {
   }
 
   ring_print();
+
+  while (getString(new_node_id, NODE_ID_LENGTH, prompt) != RETURN_TO_MENU) {
+    printf("New node %s coming up\n", new_node_id);
+  }
 
   return EXIT_SUCCESS;
 }

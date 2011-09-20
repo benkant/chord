@@ -36,7 +36,10 @@ typedef struct Ring {
 #define KEY_BITS 8
 #define TRUE 1
 #define FALSE 0
+#define RETURN_TO_MENU -1
+#define TEMP_STRING_LENGTH 1000
 
+#define NODE_ID_LENGTH 10
 #define NODE_STATE_RUNNING 1
 #define NODE_STATE_DEAD 2
 
