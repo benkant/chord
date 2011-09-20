@@ -11,7 +11,7 @@ void ring_create_node(char *node_id) {
   Node *node;
 
   if (ring == NULL) {
-    DEBUG("Ring is NULL, creating");
+    D1("Ring is NULL, creating");
     
     if ((ring = malloc(sizeof(Ring))) == NULL) {
       BAIL("Failed to allocate memory for Ring");
@@ -21,7 +21,7 @@ void ring_create_node(char *node_id) {
     ring->first_node = NULL;
   }
 
-  DEBUG("Creating Node:"); DEBUG(node_id);
+  D2("Creating Node:", node_id);
 
   node = node_init(node_id);
 
@@ -46,15 +46,12 @@ void ring_insert(Node *node) {
      * node we will insert after.
      */
     while (current != NULL) {
-      
       /* if there's no successor we're at the end, so add it here */
       if (current->successor == NULL) {
         if (node->key > current->key) {
-          printf("AT END INSERTING %d AFTER %d\n", node->key, current->key);
           ring_insert_after(current, node);
         }
         else {
-          printf("AT END INSERTING %d BEFORE %d\n", node->key, current->key);
           ring_insert_before(current, node);
         }
         break;
@@ -62,13 +59,14 @@ void ring_insert(Node *node) {
       else {
         /* if the successor node is less than the current, insert here */
         if ((node->key < current->successor->key) && (node->key > current->key)) {
-          printf("INSERTING %d AFTER %d\n", node->key, current->key);
           /* insert the node into the Ring */
           ring_insert_after(current, node);
           break;
         }
-        else if ((node->key < current->key) && ((current->predecessor == NULL) || (node->key > current->predecessor->key))) {
-          printf("INSERTING %d BEFORE %d\n", node->key, current->key);
+        /* if the node is less and current and greater than predecessor, insert here */
+        else if ((node->key < current->key) 
+            && ((current->predecessor == NULL) 
+            || (node->key > current->predecessor->key))) {
           /* insert the node into the Ring */
           ring_insert_before(current, node);
           break;

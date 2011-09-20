@@ -22,6 +22,7 @@ typedef struct Node {
   struct Node *predecessor;
   struct Node *successor;
   struct FingerTable *finger_table;
+  int state;
 } Node;
 
 /* Chord Ring */
@@ -36,6 +37,9 @@ typedef struct Ring {
 #define TRUE 1
 #define FALSE 0
 
+#define NODE_STATE_RUNNING 1
+#define NODE_STATE_DEAD 2
+
 #ifndef DEBUG_ON
 #define DEBUG_ON 0
 #endif
@@ -45,9 +49,15 @@ typedef struct Ring {
   fprintf(stderr, "FATAL: %s\n", x); \
   exit(EXIT_FAILURE);
 
-#define DEBUG(x) \
+#define D1(x) \
   if (DEBUG_ON) { \
     printf("DEBUG: %s\n", x); \
   }
+
+#define D2(x, y) \
+  if (DEBUG_ON) { \
+    printf("DEBUG: %s %s\n", x, y); \
+  }
+
 
 #endif
