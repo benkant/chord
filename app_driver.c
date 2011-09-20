@@ -1,8 +1,42 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "chord_types.h"
+#include "ring.h"
+
+char* random_string(int length);
+
 int main(int argc, char *argv[]) {
-  printf("Starting\n");
+  const int NUM_NODES = 10;
+  const int NODE_ID_LENGTH = 10;
+  int i;
+  char *node_id;
+
+  printf("Starting...\n");
+
+  /* create some random nodes */
+  for (i = 0; i < NUM_NODES; i++) {
+    node_id = random_string(NODE_ID_LENGTH);
+    ring_create_node(node_id);
+  }
 
   return EXIT_SUCCESS;
+}
+
+char* random_string(int length) {
+  char *random;
+  int i, c;
+  char *chars = "ABCDEF0123456789";
+
+  /* allocate mem for random string */
+  if ((random = malloc(sizeof(char) * length)) == NULL) {
+    BAIL("Failed to allocate memory for random string");
+  }
+
+  for (i = 0; i < length; i++) {
+    c = (int) rand() % length;
+    random[i] = chars[c];
+  }
+
+  return random;
 }

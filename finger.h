@@ -5,6 +5,6 @@
 #include "key.h"
 
 Finger* finger_init(Node *node, int key);
-void finger_table_init(FingerTable *table, Node *node);
+FingerTable* finger_table_init(Node *node);
 
 #endif

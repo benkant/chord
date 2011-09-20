@@ -27,7 +27,7 @@ app_driver.o:
 	$(CC) -c app_driver.c
 
 debug:
-	$(CC) -g finger.c hash.c key.c node.c ring.c app_driver.c $(LN) -o chord_debug
+	$(CC) -g finger.c hash.c key.c node.c ring.c app_driver.c -DDEBUG_ON=1 $(LN) -o chord_debug
 
 archive:
 	zip chord.zip README finger.c finger.h hash.c hash.h key.c key.h node.c node.h ring.c ring.h app_driver.c

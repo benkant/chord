@@ -1,7 +1,16 @@
 #include "node.h"
 
-Node* node_init(int id) {
+Node* node_init(char *id) {
   Node *node;
+
+  if ((node = malloc(sizeof(Node))) == NULL) {
+    BAIL("Failed to allocate memory for Node");
+  }
+
+  node->id = id;
+  node->key = chord_hash(id);
+  node->finger_table = finger_table_init(node);
+  node_create(node);
 
   return node;
 }
@@ -12,7 +21,7 @@ Node* find_successor(int key) {
   return successor;
 }
 
-Node* find_predecessor(int key) {
+Node* closest_preceding_node(int key) {
   Node *predecessor;
 
   return predecessor;
