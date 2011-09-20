@@ -15,10 +15,13 @@ int main(int argc, char *argv[]) {
   printf("Starting...\n");
 
   /* create some random nodes */
+  /* @TODO: check for duplicate node id's */
   for (i = 0; i < NUM_NODES; i++) {
     node_id = random_string(NODE_ID_LENGTH);
     ring_create_node(node_id);
   }
+
+  ring_print();
 
   return EXIT_SUCCESS;
 }
@@ -26,7 +29,7 @@ int main(int argc, char *argv[]) {
 char* random_string(int length) {
   char *random;
   int i, c;
-  char *chars = "ABCDEF0123456789";
+  char *chars = "abcdef0123456789";
 
   /* allocate mem for random string */
   if ((random = malloc(sizeof(char) * length)) == NULL) {
@@ -34,7 +37,7 @@ char* random_string(int length) {
   }
 
   for (i = 0; i < length; i++) {
-    c = (int) rand() % length;
+    c = (int) (rand() % strlen(chars));
     random[i] = chars[c];
   }
 

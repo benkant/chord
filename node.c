@@ -28,6 +28,8 @@ Node* closest_preceding_node(int key) {
 }
 
 void node_create(Node *node) {
+  node->predecessor = NULL;
+  node->successor = node;
 }
 
 void node_join(Node *node) {
@@ -45,3 +47,6 @@ void node_fix_fingers(Node *node) {
 void node_check_predecessor(Node *node) {
 }
 
+void node_print(Node *node) {
+  printf("Key: %d, ID: %s\n", node->key, node->id);
+}
