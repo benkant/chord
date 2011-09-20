@@ -1,0 +1,11 @@
+Chord implementation in C
+
+This implements the Chord algorithm based on the following paper:
+Stoica, Ion et al. (2001). "Chord: A Scalable Peer-to-peer Lookup Service for Internet Applications". Proceedings of SIGCOMM'01 (ACM Press New York, NY, USA)
+
+Paper available here:
+http://pdos.csail.mit.edu/papers/ton:chord/
+
+This implementation does not operate in a network environment and is a simulation.
+
+The simulation requirements are to use an 8 bit keyspace, so a very simple hashing function is used. To use a larger keyspace it would be trivial to swap out the hash function with something like SHA.
