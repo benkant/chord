@@ -38,6 +38,11 @@ typedef struct Ring {
 #define FALSE 0
 #define RETURN_TO_MENU -1
 #define TEMP_STRING_LENGTH 1000
+#define MAX_OPTION_INPUT_LENGTH 1
+#define OPTION_MIN 1
+#define OPTION_MAX 8
+#define MAX_NODE_IDX 3
+#define NODE_IDX_MIN 1
 
 #define NODE_ID_LENGTH 10
 #define NODE_STATE_RUNNING 1
@@ -62,5 +67,8 @@ typedef struct Ring {
     printf("DEBUG: %s %s\n", x, y); \
   }
 
+/* warning, contains side effects when used with prefix or postfix increment operators */
+#define MIN(a,b) ((a)>(b)?(b):(a))
+#define MAX(a,b) ((a)>(b)?(a):(b))
 
 #endif

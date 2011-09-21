@@ -1,6 +1,6 @@
 #include "node.h"
 
-Node* node_init(char *id) {
+Node* node_init(char *id, int new_network) {
   Node *node;
 
   if ((node = malloc(sizeof(Node))) == NULL) {
@@ -11,7 +11,9 @@ Node* node_init(char *id) {
   node->key = chord_hash(id);
   node->finger_table = finger_table_init(node);
   node->state = NODE_STATE_RUNNING;
-  node_create(node);
+  if (new_network) {
+    node_create(node);
+  }
 
   return node;
 }
@@ -31,9 +33,9 @@ Node* node_closest_preceding_node(Node *node, int key) {
   int i;
   Finger *finger;
 
-  for (i = KEY_BITS; i > 0; i--) {
+  for (i = KEY_BITS - 1; i >= 0; i--) {
     finger = node->finger_table->fingers[i];
-    if (key_is_between(finger->node->key, key, node->key)) {
+    if (key_in_range(finger->node->key, key, node->key)) {
       return finger->node;
     }
   }
@@ -42,6 +44,9 @@ Node* node_closest_preceding_node(Node *node, int key) {
 }
 
 void node_create(Node *node) {
+  Ring *ring = ring_get();
+  
+  ring->first_node = node;
   node->predecessor = NULL;
   node->successor = node;
 }
@@ -64,7 +69,7 @@ void node_stabilise(Node *node) {
 
 void node_notify(Node *notify_node, Node *check_node) {
   if ((notify_node->predecessor == NULL)
-      || key_is_between(check_node->key, notify_node->predecessor->key, notify_node->key)) {
+      || key_in_range(check_node->key, notify_node->predecessor->key, notify_node->key)) {
     notify_node->predecessor = check_node;
   }
 }
@@ -87,4 +92,14 @@ void node_check_predecessor(Node *node) {
 
 void node_print(Node *node) {
   printf("Key: %d, ID: %s\n", node->key, node->id);
+}
+
+void node_print_finger_table(Node *node) {
+  int i;
+  Finger *finger;
+
+  for (i = 0; i < KEY_BITS; i++) {
+    finger = node->finger_table->fingers[i];
+    printf("i: %d, node_id: %s, start: %d\n", i, finger->node->id, finger->start);
+  }
 }

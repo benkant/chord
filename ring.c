@@ -3,27 +3,30 @@
 
 static Ring *ring;
 
-void ring_get_node(int idx) {
+Node* ring_get_node(int idx) {
+  Node *current;
+  int i = 0;
 
+  current = ring->first_node;
+  while (current != NULL) {
+    i++;
+    if (idx == i) {
+      return current;
+    }
+    current = current->successor != current ? current->successor : NULL;
+  }
+
+  return current;
 }
 
 void ring_create_node(char *node_id) {
   Node *node;
-
-  if (ring == NULL) {
-    D1("Ring is NULL, creating");
-    
-    if ((ring = malloc(sizeof(Ring))) == NULL) {
-      BAIL("Failed to allocate memory for Ring");
-    }
-
-    ring->size = 0;
-    ring->first_node = NULL;
-  }
-
+  /* @TODO */
+  printf("Shouldn't be here\n");
+ 
   D2("Creating Node:", node_id);
 
-  node = node_init(node_id);
+  node = node_init(node_id, FALSE);
 
   /* @TODO: check node_id doesn't exist */
 
@@ -32,6 +35,8 @@ void ring_create_node(char *node_id) {
 
 void ring_insert(Node *node) {
   Node *current;
+  Ring *ring = ring_get();
+
   if (ring->first_node == NULL) {
     ring->first_node = node;
     ring->last_node = node;
@@ -74,12 +79,14 @@ void ring_insert(Node *node) {
       }
 
       /* go to the next node in the ring */
-      current = current->successor;
+      current = current->successor != current ? current->successor : NULL;
     }
   }
 }
 
 void ring_insert_before(Node *before_node, Node *node) {
+  Ring *ring = ring_get();
+
   node->predecessor = before_node->predecessor;
   node->successor = before_node;
   if (before_node->predecessor == NULL) {
@@ -92,31 +99,66 @@ void ring_insert_before(Node *before_node, Node *node) {
 }
 
 void ring_insert_after(Node *after_node, Node *node) {
-    node->predecessor = after_node;
-    node->successor = after_node->successor;
-    if (after_node->successor == NULL) {
-      ring->last_node = node;
-    }
-    else {
-      after_node->successor->predecessor = node;
-    }
-    after_node->successor = node;
+  Ring *ring = ring_get();
+
+  node->predecessor = after_node;
+  node->successor = after_node->successor;
+  if (after_node->successor == NULL) {
+    ring->last_node = node;
+  }
+  else {
+    after_node->successor->predecessor = node;
+  }
+  after_node->successor = node;
 }
 
 int ring_size() {
-  return 1;
+  Node *current;
+  Ring *ring = ring_get();
+  int size = 0;
+
+  current = ring->first_node;
+  
+  while (current != NULL) {
+    size++;
+    current = current->successor != current ? current->successor : NULL;
+  }
+
+  return size;
 }
 
 int ring_key_max() {
   return pow(2, KEY_BITS);
 }
 
-void ring_print() {
+void ring_print(int index) {
   Node *current;
+  Ring *ring = ring_get();
+  int i = 0;
+ 
   current = ring->first_node;
 
   while (current != NULL) {
+    i++;
+    if (index) {
+      printf("%d) ", i);
+    }
     node_print(current);
-    current = current->successor;
+    current = current->successor != current ? current->successor : NULL;
   }
+}
+
+Ring *ring_get() {
+  if (ring == NULL) {
+    D1("Ring is NULL, creating");
+    
+    if ((ring = malloc(sizeof(Ring))) == NULL) {
+      BAIL("Failed to allocate memory for Ring");
+    }
+
+    ring->size = 0;
+    ring->first_node = NULL;
+  }
+
+  return ring;
 }
