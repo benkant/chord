@@ -20,7 +20,10 @@ Node* node_init(char *id, int new_network) {
 
 Node* node_find_successor(Node *node, int key) {
   Node *closest_preceding_node;
-  if (node->successor->key == key) {
+  /*if (node->successor->key == key) {*/
+  /*if (key_in_range(key, node->key, node->successor->key)) {*/
+  if ((key > node->key && key <= node->successor->key)
+      || (node == node->successor)) {
     return node->successor;
   }
   else {
@@ -35,7 +38,8 @@ Node* node_closest_preceding_node(Node *node, int key) {
 
   for (i = KEY_BITS - 1; i >= 0; i--) {
     finger = node->finger_table->fingers[i];
-    if (key_in_range(finger->node->key, key, node->key)) {
+    /*if (key_in_range(finger->node->key, key, node->key)) {*/
+    if (key > node->key && key < finger->node->key) {
       return finger->node;
     }
   }
@@ -69,7 +73,8 @@ void node_stabilise(Node *node) {
 
 void node_notify(Node *notify_node, Node *check_node) {
   if ((notify_node->predecessor == NULL)
-      || key_in_range(check_node->key, notify_node->predecessor->key, notify_node->key)) {
+      || (check_node->key > notify_node->predecessor->key 
+      && check_node->key < notify_node->key)) {
     notify_node->predecessor = check_node;
   }
 }
