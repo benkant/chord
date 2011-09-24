@@ -40,26 +40,26 @@ void do_ring_print();
 
 int main(int argc, char *argv[]) {
   /*
-  const int NUM_NODES = 10;
-  int i;
-  char *node_id;
-  */
-
+   const int NUM_NODES = 10;
+   int i;
+   char *node_id;
+   */
+  
   printf("Starting...\n");
-
+  
   /* create some random nodes */
   /* @TODO: check for duplicate node id's */
   /*
-  for (i = 0; i < NUM_NODES; i++) {
-    node_id = random_string(NODE_ID_LENGTH);
-    ring_create_node(node_id);
-  }
-
-  ring_print(FALSE);
-  */
-
+   for (i = 0; i < NUM_NODES; i++) {
+   node_id = random_string(NODE_ID_LENGTH);
+   ring_create_node(node_id);
+   }
+   
+   ring_print(FALSE);
+   */
+  
   do_main_menu();
-
+  
   return EXIT_SUCCESS;
 }
 
@@ -67,7 +67,7 @@ void do_main_menu() {
   char *prompt = "> ";
   int exit = FALSE;
   int option;
-
+  
   while (!exit) {
     printf("\nMain Menu:\n");
     printf("1) Add node\n");
@@ -78,9 +78,9 @@ void do_main_menu() {
     printf("6) Node leave\n");
     printf("7) Node fail\n");
     printf("8) Exit\n\n");
-
+    
     getInteger(&option, MAX_OPTION_INPUT_LENGTH, prompt, OPTION_MIN, OPTION_MAX);  
-
+    
     switch (option) {
       case 1:
         do_node_add();
@@ -106,7 +106,7 @@ void do_main_menu() {
       case 8:
         exit = TRUE;
     }
-
+    
     option = 0;
   }
 }
@@ -116,64 +116,65 @@ Node *do_node_get() {
   Node *node = NULL;
   int node_idx = -100;
   int node_idx_max = ring_size();
-
+  
   if (node_idx_max != 0) {
     do {
       ring_print(TRUE);
-
+      
       getInteger(&node_idx, MAX_NODE_IDX, prompt, NODE_IDX_MIN, node_idx_max);
-
+      
       if (node_idx == RETURN_TO_MENU) {
         break;
       }
-
+      
       node = ring_get_node(node_idx);
-
+      
     } while (node == NULL);
   }
   else {
     D1("Ring is empty");
   }
-
+  
   return node;
 }
 
 void do_node_add() {
   char *prompt = "Enter node ID in hex, max 10 chars: ";
   char *new_node_id;
-  Node *new_node, *existing_node;
-
+  Node *new_node = NULL, *existing_node = NULL;
+  
   if ((new_node_id = malloc(sizeof(char) * NODE_ID_LENGTH)) == NULL) {
     BAIL("Failed to create node ID string");
   }
-
+  
   getString(new_node_id, NODE_ID_LENGTH, prompt);
-
+  new_node = node_init(new_node_id);
+  
   if (ring_size() == 0) {
-    /* first node added to ring */
-    new_node = node_init(new_node_id, TRUE);
-    
-    existing_node = new_node;
+    /* first node added. create the ring */
+    node_create(new_node);
   }
   else {
-    new_node = node_init(new_node_id, FALSE);
-
+    /* get node to join */
     existing_node = do_node_get();
-  }
-
-  if (existing_node == NULL) {
-    D1("Could not get node");
-  }
-  else {
-    D2("Joining to node", existing_node->id);
-    node_join(existing_node, new_node);
-    node_stabilise(new_node);
+    
+    if (existing_node == NULL) {
+      D1("Could not get node");
+    }
+    else {
+      D2("Joining to node", existing_node->id);
+      node_join(existing_node, new_node);
+      node_stabilise(new_node);
+      node_fix_fingers(new_node);
+      node_stabilise(existing_node);
+      node_fix_fingers(existing_node);
+    }
   }
 }
 
 void do_node_print() {
   Node *node = do_node_get();
-
+  
   node_print(node);
   node_print_finger_table(node);
 }
@@ -198,16 +199,16 @@ char* random_string(int length) {
   char *random;
   int i, c;
   char *chars = "abcdef0123456789";
-
+  
   /* allocate mem for random string */
   if ((random = malloc(sizeof(char) * length)) == NULL) {
     BAIL("Failed to allocate memory for random string");
   }
-
+  
   for (i = 0; i < length; i++) {
     c = (int) (rand() % strlen(chars));
     random[i] = chars[c];
   }
-
+  
   return random;
 }

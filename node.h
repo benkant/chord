@@ -5,7 +5,7 @@
 #include "hash.h"
 #include "finger.h"
 
-Node* node_init(char *id, int new_network);
+Node* node_init(char *id);
 Node* node_find_successor(Node *node, int key);
 Node* node_closest_preceding_node(Node *node, int key);
 void node_create(Node *node);

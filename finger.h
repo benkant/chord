@@ -1,6 +1,7 @@
 #ifndef _FINGER_H
 #define _FINGER_H
 
+#include <math.h>
 #include "chord_types.h"
 #include "key.h"
 

@@ -23,6 +23,10 @@ typedef struct Node {
   struct Node *successor;
   struct FingerTable *finger_table;
   int state;
+  
+  /* DEBUG */
+  struct Node *prev;
+  struct Node *next;
 } Node;
 
 /* Chord Ring */
@@ -54,18 +58,18 @@ typedef struct Ring {
 
 /* helpers */
 #define BAIL(x) \
-  fprintf(stderr, "FATAL: %s\n", x); \
-  exit(EXIT_FAILURE);
+fprintf(stderr, "FATAL: %s\n", x); \
+exit(EXIT_FAILURE);
 
 #define D1(x) \
-  if (DEBUG_ON) { \
-    printf("DEBUG: %s\n", x); \
-  }
+if (DEBUG_ON) { \
+printf("DEBUG: %s\n", x); \
+}
 
 #define D2(x, y) \
-  if (DEBUG_ON) { \
-    printf("DEBUG: %s %s\n", x, y); \
-  }
+if (DEBUG_ON) { \
+printf("DEBUG: %s %s\n", x, y); \
+}
 
 /* warning, contains side effects when used with prefix or postfix increment operators */
 #define MIN(a,b) ((a)>(b)?(b):(a))
