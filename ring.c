@@ -166,9 +166,6 @@ void ring_stabilise_all() {
     node_stabilise(current);
     node_fix_fingers(current);
     
-    printf("New finger table for %d:\n", current->key);
-    node_print_finger_table(current);
-    
     current = current->successor != current ? current->successor : NULL;
     
     if (done_first && current == ring->first_node) {

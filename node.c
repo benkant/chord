@@ -42,7 +42,7 @@ Node* node_closest_preceding_node(Node *node, int key) {
     finger = node->finger_table->fingers[i];
     
     /*if (key > node->key && key < finger->start) {*/
-    if (key_in_range(finger->start, node->key, key, FALSE)) {
+    if (key_in_range(finger->start, node->key, key, TRUE)) {
       return finger->node;
     }
   }
@@ -95,6 +95,9 @@ void node_fix_fingers(Node *node) {
   
   for (i = 0; i < KEY_BITS; i++) {
     finger = node->finger_table->fingers[i];
+    if (node->key == 6 && finger->start == 38) {
+      printf("balmer peak reached\n");
+    }
     finger->node = node_find_successor(node, finger->start);
   }
 }
