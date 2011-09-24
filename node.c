@@ -54,6 +54,7 @@ void node_create(Node *node) {
   Ring *ring = ring_get();
   
   ring->first_node = node;
+  ring->last_node = node;
   node->predecessor = NULL;
   node->successor = node;
 }
@@ -67,7 +68,8 @@ void node_stabilise(Node *node) {
   Node *x = node->successor->predecessor;
   
   if (x != NULL) {
-    if (node == node->successor) {
+    if (node == node->successor
+        || key_in_range(x->key, node->key, node->successor->key, TRUE)) {
       node->successor = x;
     }
   }

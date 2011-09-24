@@ -2,6 +2,8 @@
 #include "ring.h"
 
 static Ring *ring;
+static Node **nodes;
+static int num_nodes = 0;
 
 Node* ring_get_node(int idx) {
   Node *current = NULL;
@@ -138,6 +140,42 @@ int ring_size() {
 
 int ring_key_max() {
   return pow(2, KEY_BITS);
+}
+
+void ring_add(Node *node) {
+  num_nodes++;
+  
+  if ((nodes = realloc(nodes, sizeof(void*) * num_nodes)) == NULL) {
+    BAIL("Failed to realloc rings array");
+  }
+      
+  nodes[num_nodes] = node;
+}
+
+void ring_stabilise_all() {
+  Node *current = NULL;
+  Ring *ring = ring_get();
+  int i = 0;
+  int done_first = 0;
+  
+  current = ring->first_node;
+  
+  while (current != NULL) {
+    i++;
+    
+    node_stabilise(current);
+    node_fix_fingers(current);
+    
+    current = current->successor != current ? current->successor : NULL;
+    
+    if (done_first && current == ring->first_node) {
+      current = NULL;
+    }
+    
+    if (!done_first) {
+      done_first = 1;
+    }
+  }
 }
 
 void ring_print(int index) {

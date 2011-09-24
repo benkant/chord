@@ -142,6 +142,7 @@ void do_node_add() {
   char *prompt = "Enter node ID in hex, max 10 chars: ";
   char *new_node_id;
   Node *new_node = NULL, *existing_node = NULL;
+  Ring *ring = ring_get();
   
   if ((new_node_id = malloc(sizeof(char) * NODE_ID_LENGTH)) == NULL) {
     BAIL("Failed to create node ID string");
@@ -163,11 +164,21 @@ void do_node_add() {
     }
     else {
       D2("Joining to node", existing_node->id);
-      node_join(existing_node, new_node);
+      node_join(existing_node, new_node);      
       node_stabilise(new_node);
       node_fix_fingers(new_node);
       node_stabilise(existing_node);
       node_fix_fingers(existing_node);
+
+      /* update chord ring if necessary */
+      if (new_node->key < ring->first_node->key) {
+        ring->first_node = new_node;
+      }
+      if (new_node->key > ring->last_node->key) {
+        ring->last_node = new_node;
+      }
+      
+      ring_stabilise_all();
     }
   }
 }

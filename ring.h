@@ -13,5 +13,7 @@ void ring_insert_before(Node *before_node, Node *node);
 void ring_insert_after(Node *after_node, Node *node);
 void ring_print(int index);
 Ring* ring_get();
+void ring_add(Node *node);
+void ring_stabilise_all();
 
 #endif
