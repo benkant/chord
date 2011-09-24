@@ -32,7 +32,6 @@ FingerTable* finger_table_init(Node *node) {
   }
   
   for (i = 0; i < finger_table->length; i++) {
-    //int init = key_init(node, i);
     start = node->key + pow(2, i);
     finger = finger_init(node, start);
     finger_table->fingers[i] = finger;
