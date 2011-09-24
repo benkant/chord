@@ -166,6 +166,9 @@ void ring_stabilise_all() {
     node_stabilise(current);
     node_fix_fingers(current);
     
+    printf("New finger table for %d:\n", current->key);
+    node_print_finger_table(current);
+    
     current = current->successor != current ? current->successor : NULL;
     
     if (done_first && current == ring->first_node) {
@@ -178,7 +181,7 @@ void ring_stabilise_all() {
   }
 }
 
-void ring_print(int index) {
+void ring_print(int index, int with_fingers) {
   Node *current = NULL;
   Ring *ring = ring_get();
   int i = 0;
@@ -192,6 +195,10 @@ void ring_print(int index) {
       printf("%d) ", i);
     }
     node_print(current);
+    if (with_fingers) {
+      node_print_finger_table(current);
+    }
+    
     current = current->successor != current ? current->successor : NULL;
     
     if (done_first && current == ring->first_node) {

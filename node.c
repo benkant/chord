@@ -81,8 +81,8 @@ void node_notify(Node *notify_node, Node *check_node) {
   if ((notify_node->predecessor == NULL)
       || (check_node->key > notify_node->predecessor->key 
           && check_node->key < notify_node->key)) {*/
-  if ((notify_node->predecessor == NULL ||
-       key_in_range(check_node->key, notify_node->predecessor->key, notify_node->key, FALSE))) {
+  if ((notify_node->predecessor == NULL 
+       || key_in_range(check_node->key, notify_node->predecessor->key, notify_node->key, FALSE))) {
     
     /* check_node thinks it might be notify_node's predecessor */
     notify_node->predecessor = check_node;

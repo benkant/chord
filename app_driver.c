@@ -37,6 +37,8 @@ Node *do_node_get();
 void do_document_add();
 void do_document_query();
 void do_ring_print();
+void do_stabilise_node();
+void do_fix_fingers();
 
 int main(int argc, char *argv[]) {
   /*
@@ -77,7 +79,9 @@ void do_main_menu() {
     printf("5) Print node\n");
     printf("6) Node leave\n");
     printf("7) Node fail\n");
-    printf("8) Exit\n\n");
+    printf("8) Stabilise node\n");
+    printf("9) Fix fingers\n");
+    printf("10) Exit\n\n");
     
     getInteger(&option, MAX_OPTION_INPUT_LENGTH, prompt, OPTION_MIN, OPTION_MAX);  
     
@@ -104,10 +108,32 @@ void do_main_menu() {
         do_node_fail();
         break;
       case 8:
+        do_stabilise_node();
+        break;
+      case 9:
+        do_fix_fingers();
+        break;
+      case 10:
         exit = TRUE;
     }
     
     option = 0;
+  }
+}
+
+void do_stabilise_node() {
+  Node *node = do_node_get();
+  
+  if (node != NULL) {
+    node_stabilise(node);
+  }
+}
+
+void do_fix_fingers() {
+  Node *node = do_node_get();
+  
+  if (node != NULL) {
+    node_fix_fingers(node);
   }
 }
 
@@ -119,7 +145,7 @@ Node *do_node_get() {
   
   if (node_idx_max != 0) {
     do {
-      ring_print(TRUE);
+      ring_print(TRUE, FALSE);
       
       getInteger(&node_idx, MAX_NODE_IDX, prompt, NODE_IDX_MIN, node_idx_max);
       
@@ -178,6 +204,10 @@ void do_node_add() {
         ring->last_node = new_node;
       }
       
+      if (new_node->key == 77) {
+        do_ring_print();
+      }
+      
       ring_stabilise_all();
     }
   }
@@ -203,7 +233,7 @@ void do_document_query() {
 }
 
 void do_ring_print() {
-  ring_print(FALSE);
+  ring_print(FALSE, TRUE);
 }
 
 char* random_string(int length) {

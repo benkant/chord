@@ -42,9 +42,9 @@ typedef struct Ring {
 #define FALSE 0
 #define RETURN_TO_MENU -1
 #define TEMP_STRING_LENGTH 1000
-#define MAX_OPTION_INPUT_LENGTH 1
+#define MAX_OPTION_INPUT_LENGTH 2
 #define OPTION_MIN 1
-#define OPTION_MAX 8
+#define OPTION_MAX 10
 #define MAX_NODE_IDX 3
 #define NODE_IDX_MIN 1
 
