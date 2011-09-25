@@ -7,6 +7,7 @@
 
 Node* node_init(char *id);
 Node* node_find_successor(Node *node, int key);
+Node* node_find_successor_impl(Node *orig_node, Node *node, int key, int depth);
 Node* node_closest_preceding_node(Node *node, int key);
 void node_create(Node *node);
 void node_join(Node *existing_node, Node *new_node);

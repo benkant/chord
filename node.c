@@ -16,21 +16,34 @@ Node* node_init(char *id) {
 }
 
 Node* node_find_successor(Node *node, int key) {
+  return node_find_successor_impl(node, node, key, 0);
+}
+
+Node* node_find_successor_impl(Node *orig_node, Node *node, int key, int depth) {
   Node *closest_preceding_node = NULL;
+
+  depth++;
   
+  if (depth > KEY_BITS * 2) {
+    D1("Too much recursion in node_find_successor, returning orginal node's successor.\n");
+    return orig_node->successor;
+  }
+    
   /*if (node->successor->key == key) {*/
   /*if ((key > node->key && key <= node->successor->key)
       || node->successor == node) {*/
   if (key_in_range(key, node->key, node->successor->key, TRUE)
+      || key == node->successor->key
+      || key == node->key
       || node == node->successor) {
     return node->successor;
   }
   else {
     closest_preceding_node = node_closest_preceding_node(node, key);
     if (closest_preceding_node == node) {
-      return node_find_successor(node->successor, key);
+      return node_find_successor_impl(orig_node, node->successor, key, depth);
     }
-    return node_find_successor(closest_preceding_node, key);
+    return node_find_successor_impl(orig_node, closest_preceding_node, key, depth);
   }
 }
 
@@ -95,9 +108,6 @@ void node_fix_fingers(Node *node) {
   
   for (i = 0; i < KEY_BITS; i++) {
     finger = node->finger_table->fingers[i];
-    if (node->key == 6 && finger->start == 38) {
-      printf("balmer peak reached\n");
-    }
     finger->node = node_find_successor(node, finger->start);
   }
 }

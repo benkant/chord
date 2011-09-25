@@ -193,9 +193,11 @@ void do_node_add() {
       node_join(existing_node, new_node);      
       node_stabilise(new_node);
       node_fix_fingers(new_node);
+      /*
       node_stabilise(existing_node);
       node_fix_fingers(existing_node);
-
+      */
+      
       /* update chord ring if necessary */
       if (new_node->key < ring->first_node->key) {
         ring->first_node = new_node;
