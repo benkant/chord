@@ -43,8 +43,8 @@ void ring_insert(Node *node) {
     ring->first_node = node;
     ring->last_node = node;
     
-    node->prev = NULL;
-    node->next = NULL;
+    node->predecessor = NULL;
+    node->successor = NULL;
   }
   else {
     current = ring->first_node;
@@ -54,7 +54,7 @@ void ring_insert(Node *node) {
      */
     while (current != NULL) {
       /* if there's no successor we're at the end, so add it here */
-      if (current->next == NULL) {
+      if (current->successor == NULL) {
         if (node->key > current->key) {
           ring_insert_after(current, node);
         }
@@ -65,23 +65,23 @@ void ring_insert(Node *node) {
       }
       else {
         /* if the successor node is less than the current, insert here */
-        if ((node->key < current->next->key) && (node->key > current->key)) {
+        if ((node->key < current->successor->key) && (node->key > current->key)) {
           /* insert the node into the Ring */
           ring_insert_after(current, node);
           break;
         }
         /* if the node is less and current and greater than predecessor, insert here */
         else if ((node->key < current->key) 
-                 && ((current->prev == NULL) 
-                     || (node->key > current->prev->key))) {
+                 && ((current->predecessor == NULL) 
+                     || (node->key > current->predecessor->key))) {
                    /* insert the node into the Ring */
                    ring_insert_before(current, node);
                    break;
                  }
       }
       
-      /* go to the next node in the ring */
-      current = current->next != current ? current->next : NULL;
+      /* go to the successor node in the ring */
+      current = current->successor != current ? current->successor : NULL;
     }
   }
 }
@@ -89,29 +89,29 @@ void ring_insert(Node *node) {
 void ring_insert_before(Node *before_node, Node *node) {
   Ring *ring = ring_get();
   
-  node->prev = before_node->prev;
-  node->next = before_node;
-  if (before_node->prev == NULL) {
+  node->predecessor = before_node->predecessor;
+  node->successor = before_node;
+  if (before_node->predecessor == NULL) {
     ring->first_node = node;
   }
   else {
-    before_node->prev->next = node;
+    before_node->predecessor->successor = node;
   }
-  before_node->prev = node;
+  before_node->predecessor = node;
 }
 
 void ring_insert_after(Node *after_node, Node *node) {
   Ring *ring = ring_get();
   
-  node->prev = after_node;
-  node->next = after_node->next;
-  if (after_node->next == NULL) {
+  node->predecessor = after_node;
+  node->successor = after_node->successor;
+  if (after_node->successor == NULL) {
     ring->last_node = node;
   }
   else {
-    after_node->next->prev = node;
+    after_node->successor->predecessor = node;
   }
-  after_node->next = node;
+  after_node->successor = node;
 }
 
 int ring_size() {

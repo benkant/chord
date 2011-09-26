@@ -16,6 +16,9 @@ void node_notify(Node *notify_node, Node *check_node);
 void node_fix_fingers(Node *node);
 void node_check_predecessor(Node *node);
 void node_print(Node *node);
+void node_print_documents(Node *node);
 void node_print_finger_table(Node *node);
+void node_document_add(Node *node, Document *doc);
+void node_document_store(Node *node, Document *doc);
 
 #endif

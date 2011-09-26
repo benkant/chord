@@ -4,38 +4,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-/* Finger and FingerTable */
-typedef struct Finger {
-  struct Node *node;
-  int start;
-} Finger;
-
-typedef struct FingerTable {
-  struct Finger **fingers;
-  int length;
-} FingerTable;
-
-/* Node */
-typedef struct Node {
-  char *id;
-  int key;
-  struct Node *predecessor;
-  struct Node *successor;
-  struct FingerTable *finger_table;
-  int state;
-  
-  /* DEBUG */
-  struct Node *prev;
-  struct Node *next;
-} Node;
-
-/* Chord Ring */
-typedef struct Ring {
-  Node *first_node;
-  Node *last_node;
-  unsigned size;
-} Ring;
-
 /* defines */
 #define KEY_BITS 8
 #define TRUE 1
@@ -47,6 +15,7 @@ typedef struct Ring {
 #define OPTION_MAX 10
 #define MAX_NODE_IDX 3
 #define NODE_IDX_MIN 1
+#define FILENAME_MAX_LENGTH 256
 
 #define NODE_ID_LENGTH 10
 #define NODE_STATE_RUNNING 1
@@ -74,5 +43,41 @@ printf("DEBUG: %s %s\n", x, y); \
 /* warning, contains side effects when used with prefix or postfix increment operators */
 #define MIN(a,b) ((a)>(b)?(b):(a))
 #define MAX(a,b) ((a)>(b)?(a):(b))
+
+/* Finger and FingerTable */
+typedef struct Finger {
+  struct Node *node;
+  int start;
+} Finger;
+
+typedef struct FingerTable {
+  struct Finger **fingers;
+  int length;
+} FingerTable;
+
+/* Node */
+typedef struct Node {
+  char *id;
+  int key;
+  struct Node *predecessor;
+  struct Node *successor;
+  struct FingerTable *finger_table;
+  int state;
+  struct Document **documents;
+  int num_documents;
+} Node;
+
+/* Document */
+typedef struct Document {
+  char filename[FILENAME_MAX_LENGTH];
+  int key;
+} Document;
+
+/* Chord Ring */
+typedef struct Ring {
+  Node *first_node;
+  Node *last_node;
+  unsigned size;
+} Ring;
 
 #endif

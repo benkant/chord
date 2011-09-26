@@ -193,10 +193,6 @@ void do_node_add() {
       node_join(existing_node, new_node);      
       node_stabilise(new_node);
       node_fix_fingers(new_node);
-      /*
-      node_stabilise(existing_node);
-      node_fix_fingers(existing_node);
-      */
       
       /* update chord ring if necessary */
       if (new_node->key < ring->first_node->key) {
@@ -205,11 +201,7 @@ void do_node_add() {
       if (new_node->key > ring->last_node->key) {
         ring->last_node = new_node;
       }
-      
-      if (new_node->key == 77) {
-        do_ring_print();
-      }
-      
+            
       ring_stabilise_all();
     }
   }
@@ -220,6 +212,7 @@ void do_node_print() {
   
   node_print(node);
   node_print_finger_table(node);
+  node_print_documents(node);
 }
 
 void do_node_leave() {
@@ -229,6 +222,23 @@ void do_node_fail() {
 }
 
 void do_document_add() {
+  Node *node;
+  char *prompt = "Enter document name: ";
+  char doc_filename[FILENAME_MAX_LENGTH];
+  Document *doc;
+  
+  node = do_node_get();
+  
+  getString(doc_filename, FILENAME_MAX_LENGTH, prompt);
+  
+  if ((doc = malloc(sizeof(Document))) == NULL) {
+    BAIL("Failed to allocate memory for Document");
+  }
+  
+  strcpy(doc->filename, doc_filename);
+  doc->key = chord_hash(doc_filename);
+  
+  node_document_add(node, doc);
 }
 
 void do_document_query() {

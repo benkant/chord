@@ -11,6 +11,7 @@ Node* node_init(char *id) {
   node->key = chord_hash(id);
   node->finger_table = finger_table_init(node);
   node->state = NODE_STATE_RUNNING;
+  node->num_documents = 0;
   
   return node;
 }
@@ -29,12 +30,7 @@ Node* node_find_successor_impl(Node *orig_node, Node *node, int key, int depth) 
     return orig_node->successor;
   }
     
-  /*if (node->successor->key == key) {*/
-  /*if ((key > node->key && key <= node->successor->key)
-      || node->successor == node) {*/
-  if (key_in_range(key, node->key, node->successor->key, TRUE)
-      || key == node->successor->key
-      || key == node->key
+  if (key_in_range(key, node->key, node->successor->key, FALSE)
       || node == node->successor) {
     return node->successor;
   }
@@ -54,8 +50,7 @@ Node* node_closest_preceding_node(Node *node, int key) {
   for (i = KEY_BITS - 1; i >= 0; i--) {
     finger = node->finger_table->fingers[i];
     
-    /*if (key > node->key && key < finger->start) {*/
-    if (key_in_range(finger->start, node->key, key, TRUE)) {
+    if (key_in_range(finger->start, node->key, key, FALSE)) {
       return finger->node;
     }
   }
@@ -90,10 +85,6 @@ void node_stabilise(Node *node) {
 }
 
 void node_notify(Node *notify_node, Node *check_node) {
-  /*
-  if ((notify_node->predecessor == NULL)
-      || (check_node->key > notify_node->predecessor->key 
-          && check_node->key < notify_node->key)) {*/
   if ((notify_node->predecessor == NULL 
        || key_in_range(check_node->key, notify_node->predecessor->key, notify_node->key, FALSE))) {
     
@@ -118,14 +109,47 @@ void node_check_predecessor(Node *node) {
   }
 }
 
+/**
+ * Node wants to add a document to the chord ring.
+ * Search for the node responsible for this key and
+ * store it at the target node.
+ */
+void node_document_add(Node *node, Document *doc) {
+  Node *target;
+  
+  target = node_find_successor(node, doc->key);
+  node_document_store(node, doc);
+}
+
+/**
+ * Store a document at this node
+ */
+void node_document_store(Node *node, Document *doc) {
+  if ((node->documents = realloc(node->documents, (sizeof(struct Document*) * node->num_documents + 1))) == NULL) {
+    BAIL("Failed to allocate memory for node documents");
+  }
+  node->documents[node->num_documents] = doc;
+  node->num_documents++;
+}
+
 void node_print(Node *node) {
   int predecessor, successor;
   
   predecessor = node->predecessor != NULL ? node->predecessor->key : 0;
   successor = node->successor != NULL ? node->successor->key : 0;
   
-  printf("Key: %d, ID: %s\n", node->key, node->id);
+  printf("Key: %d, ID: %s", node->key, node->id);
   printf("\tPredecessor: %d, successor: %d\n", predecessor, successor);
+}
+
+void node_print_documents(Node *node) {
+  int i;
+  Document *doc;
+  
+  for (i = 0; i < node->num_documents; i++) {
+    doc = node->documents[i];
+    printf("%d) %s (key: %d)\n", i, doc->filename, doc->key);
+  }
 }
 
 void node_print_finger_table(Node *node) {
