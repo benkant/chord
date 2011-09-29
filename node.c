@@ -2,6 +2,7 @@
 
 Node* node_init(char *id) {
   Node *node = NULL;
+  Ring *ring = ring_get();
   
   if ((node = malloc(sizeof(Node))) == NULL) {
     BAIL("Failed to allocate memory for Node");
@@ -12,6 +13,9 @@ Node* node_init(char *id) {
   node->finger_table = finger_table_init(node);
   node->state = NODE_STATE_RUNNING;
   node->num_documents = 0;
+  
+  ring->nodes[ring->size] = node;
+  ring->size++;
   
   return node;
 }
@@ -26,11 +30,10 @@ Node* node_find_successor_impl(Node *orig_node, Node *node, int key, int depth) 
   depth++;
   
   if (depth > KEY_BITS * 2) {
-    D1("Too much recursion in node_find_successor, returning orginal node's successor.\n");
-    return orig_node->successor;
+    return node_find_successor(orig_node->successor, key);
   }
-    
-  if (key_in_range(key, node->key, node->successor->key, FALSE)
+  
+  if (key_in_range(key, node->key, node->successor->key, TRUE)
       || node == node->successor) {
     return node->successor;
   }
@@ -77,7 +80,7 @@ void node_stabilise(Node *node) {
   
   if (x != NULL) {
     if (node == node->successor
-        || key_in_range(x->key, node->key, node->successor->key, TRUE)) {
+        || key_in_range(x->key, node->key, node->successor->key, FALSE)) {
       node->successor = x;
     }
   }
@@ -96,11 +99,35 @@ void node_notify(Node *notify_node, Node *check_node) {
 void node_fix_fingers(Node *node) {
   int i;
   Finger *finger = NULL;
+  Node *nodes[KEY_BITS];
+  
+  /* reset */
+  for (i = 0; i < KEY_BITS; i++) {
+    finger = node->finger_table->fingers[i];
+    finger->node = node->successor;
+  }
   
   for (i = 0; i < KEY_BITS; i++) {
     finger = node->finger_table->fingers[i];
+    nodes[i] = node_find_successor(node, finger->start);
+    /*
+    finger = node->finger_table->fingers[i];
+    finger->node = node_find_successor(node, finger->start);
+    */
+  }
+  
+  for (i = 0; i < KEY_BITS; i++) {
+    finger = node->finger_table->fingers[i];
+    finger->node = nodes[i];
+  }
+  
+  /*for (i = 0; i < KEY_BITS; i++) {*/
+  /*
+  for (i = KEY_BITS - 1; i >= 0; i--) {
+    finger = node->finger_table->fingers[i];
     finger->node = node_find_successor(node, finger->start);
   }
+  */
 }
 
 void node_check_predecessor(Node *node) {

@@ -12,7 +12,7 @@
 #define TEMP_STRING_LENGTH 1000
 #define MAX_OPTION_INPUT_LENGTH 2
 #define OPTION_MIN 1
-#define OPTION_MAX 10
+#define OPTION_MAX 12
 #define MAX_NODE_IDX 3
 #define NODE_IDX_MIN 1
 #define FILENAME_MAX_LENGTH 256
@@ -78,6 +78,7 @@ typedef struct Ring {
   Node *first_node;
   Node *last_node;
   unsigned size;
+  Node *nodes[500];
 } Ring;
 
 #endif

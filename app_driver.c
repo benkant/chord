@@ -39,30 +39,64 @@ void do_document_query();
 void do_ring_print();
 void do_stabilise_node();
 void do_fix_fingers();
+void do_node_add_random(int num);
 
 int main(int argc, char *argv[]) {
-  /*
-   const int NUM_NODES = 10;
-   int i;
-   char *node_id;
-   */
+  const int NUM_NODES = 10;
+  int i;
+  char *node_id;
   
   printf("Starting...\n");
   
   /* create some random nodes */
   /* @TODO: check for duplicate node id's */
   /*
-   for (i = 0; i < NUM_NODES; i++) {
-   node_id = random_string(NODE_ID_LENGTH);
-   ring_create_node(node_id);
-   }
-   
-   ring_print(FALSE);
-   */
+  for (i = 0; i < NUM_NODES; i++) {
+    node_id = random_string(NODE_ID_LENGTH);
+    ring_create_node(node_id);
+  }
+  */
   
+  do_node_add_random(NUM_NODES);
+
   do_main_menu();
-  
+
   return EXIT_SUCCESS;
+}
+
+void do_node_add_random(int num) {
+  char *node_id;
+  int i;
+  Node *new_node;
+  Ring *ring = ring_get();
+  
+  for (i = 0; i < num; i++) {
+    /*node_id = random_string(NODE_ID_LENGTH);*/
+    node_id = random_string(3);
+    new_node = node_init(node_id);
+    printf("%s\n", node_id);
+    
+    if (ring_size() == 1) {
+      /* first node added. create the ring */
+      node_create(new_node);
+    }
+    else {
+      node_join(ring->nodes[0], new_node);
+      node_stabilise(new_node);
+      node_fix_fingers(new_node);
+      
+      /* update chord ring if necessary */
+      if (new_node->key < ring->nodes[0]->key) {
+        ring->first_node = new_node;
+      }
+      if (new_node->key > ring->nodes[0]->key) {
+        ring->last_node = new_node;
+      }
+        
+      ring_stabilise_all();
+      /*ring_stabilise_all();*/
+    }
+  }
 }
 
 void do_main_menu() {
@@ -81,7 +115,9 @@ void do_main_menu() {
     printf("7) Node fail\n");
     printf("8) Stabilise node\n");
     printf("9) Fix fingers\n");
-    printf("10) Exit\n\n");
+    printf("10) Stabilise and fix fingers on all nodes\n");
+    printf("11) Print all nodes\n");
+    printf("12) Exit\n\n");
     
     getInteger(&option, MAX_OPTION_INPUT_LENGTH, prompt, OPTION_MIN, OPTION_MAX);  
     
@@ -114,6 +150,12 @@ void do_main_menu() {
         do_fix_fingers();
         break;
       case 10:
+        ring_stabilise_all();
+        break;
+      case 11:
+        ring_print_all(FALSE, TRUE);
+        break;
+      case 12:
         exit = TRUE;
     }
     
@@ -190,10 +232,11 @@ void do_node_add() {
     }
     else {
       D2("Joining to node", existing_node->id);
-      node_join(existing_node, new_node);      
+      node_join(existing_node, new_node);
+
       node_stabilise(new_node);
       node_fix_fingers(new_node);
-      
+
       /* update chord ring if necessary */
       if (new_node->key < ring->first_node->key) {
         ring->first_node = new_node;
@@ -201,7 +244,7 @@ void do_node_add() {
       if (new_node->key > ring->last_node->key) {
         ring->last_node = new_node;
       }
-            
+
       ring_stabilise_all();
     }
   }

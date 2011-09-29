@@ -117,6 +117,8 @@ void ring_insert_after(Node *after_node, Node *node) {
 int ring_size() {
   Node *current = NULL;
   Ring *ring = ring_get();
+  
+  /*
   int size = 0;
   int done_first = 0;
   
@@ -134,8 +136,9 @@ int ring_size() {
       done_first = 1;
     }
   }
+   */
   
-  return size;
+  return ring->size;
 }
 
 int ring_key_max() {
@@ -158,14 +161,18 @@ void ring_stabilise_all() {
   int i = 0;
   int done_first = 0;
   
+  /*
   current = ring->first_node;
   
   while (current != NULL) {
     i++;
-    
+*/
+  for (i = 0; i < ring->size; i++) {
+    current = ring->nodes[i];
     node_stabilise(current);
     node_fix_fingers(current);
     
+    /*
     current = current->successor != current ? current->successor : NULL;
     
     if (done_first && current == ring->first_node) {
@@ -175,6 +182,7 @@ void ring_stabilise_all() {
     if (!done_first) {
       done_first = 1;
     }
+     */
   }
 }
 
@@ -184,10 +192,16 @@ void ring_print(int index, int with_fingers) {
   int i = 0;
   int done_first = 0;
   
+  
   current = ring->first_node;
   
   while (current != NULL) {
     i++;
+   
+  /*
+  for (i = 0; i < ring->size; i++) {
+    current = ring->nodes[i];
+   */
     if (index) {
       printf("%d) ", i);
     }
@@ -195,6 +209,7 @@ void ring_print(int index, int with_fingers) {
     if (with_fingers) {
       node_print_finger_table(current);
     }
+    
     
     current = current->successor != current ? current->successor : NULL;
     
@@ -205,8 +220,48 @@ void ring_print(int index, int with_fingers) {
     if (!done_first) {
       done_first = 1;
     }
+    
   }
 }
+
+void ring_print_all(int index, int with_fingers) {
+  Node *current = NULL;
+  Ring *ring = ring_get();
+  int i = 0;
+  /*
+  int done_first = 0;
+    
+  current = ring->first_node;
+  
+  while (current != NULL) {
+    i++;
+  */  
+    
+  for (i = 0; i < ring->size; i++) {
+   current = ring->nodes[i];
+    
+    if (index) {
+      printf("%d) ", i);
+    }
+    node_print(current);
+    if (with_fingers) {
+      node_print_finger_table(current);
+    }
+  
+    /*
+    current = current->successor != current ? current->successor : NULL;
+    
+    if (done_first && current == ring->first_node) {
+      current = NULL;
+    }
+    
+    if (!done_first) {
+      done_first = 1;
+    }
+    */
+  }
+}
+
 
 Ring *ring_get() {
   if (ring == NULL) {
