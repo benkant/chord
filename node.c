@@ -76,7 +76,16 @@ void node_join(Node *existing_node, Node *new_node) {
 }
 
 void node_stabilise(Node *node) {
+  Node *successor = node->successor;
   Node *x = node->successor->predecessor;
+  int i = 0;
+  
+  /* per E.3 maintain successor list */
+  while (successor != NULL && i < SUCCESSOR_LIST_SIZE) {
+    node->successors[i] = successor;
+    successor = successor->successor;
+    i++;
+  }
   
   if (x != NULL) {
     if (node == node->successor

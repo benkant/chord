@@ -22,6 +22,10 @@
 #define NODE_STATE_RUNNING 1
 #define NODE_STATE_DEAD 2
 
+/* per E.3 of paper this determines the number of successors to store
+ for replication */
+#define SUCCESSOR_LIST_SIZE 3
+
 #ifndef DEBUG_ON
 #define DEBUG_ON 0
 #endif
@@ -66,6 +70,9 @@ typedef struct Node {
   int state;
   struct Document **documents;
   int num_documents;
+  
+  /* per E.3 for replication */
+  struct Node *successors[SUCCESSOR_LIST_SIZE];
 } Node;
 
 /* Document */
