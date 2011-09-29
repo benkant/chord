@@ -10,12 +10,12 @@
  * check all functions are called
  * check memory leaks
  * * "accept list of peers and build a chord ring for these peers"
- * - "print chord topology figure showing node ID locations (see L5 S10)"
- * - "print the content of any node in the ring"
+ * * "print chord topology figure showing node ID locations (see L5 S10)"
+ * * "print the content of any node in the ring"
  * - "insert and retrieve documents into/from the network:"
  *   - "a list of documents will be given to the program, and the program should be able
  *   to allocate these documents to nodes using chord strategies."
- *   - "Design your own hash functions. You may use file names as the input for hashing."
+ *   * "Design your own hash functions. You may use file names as the input for hashing."
  * - "accept a text query in terms of file name and reply with:"
  *   - "Print all nodes containing answer and the adopted route for transferring the data" or
  *   - "Print a message indicating a query answer is not found"
@@ -150,18 +150,22 @@ void do_main_menu() {
 }
 
 void do_stabilise_node() {
-  Node *node = do_node_get();
+  Node *node = do_node_get("Select node: ");
   
   if (node != NULL) {
     node_stabilise(node);
+    
+    printf("\nNode %s stabilised.\n", node->id);
   }
 }
 
 void do_fix_fingers() {
-  Node *node = do_node_get();
+  Node *node = do_node_get("Select node: ");
   
   if (node != NULL) {
     node_fix_fingers(node);
+    
+    printf("\nNode %s finger tables fixed.\n", node->id);
   }
 }
 
@@ -259,22 +263,38 @@ void do_document_add() {
   char *prompt = "Enter document name: ";
   char doc_filename[FILENAME_MAX_LENGTH];
   Document *doc;
+  char doc_data[TEMP_STRING_LENGTH];
   
-  node = do_node_get("Select node: ");
+  node = do_node_get("Select node context: ");
   
   getString(doc_filename, FILENAME_MAX_LENGTH, prompt);
+  
+  prompt = "Enter document data: ";
+  getString(doc_data, FILENAME_MAX_LENGTH, prompt);
   
   if ((doc = malloc(sizeof(Document))) == NULL) {
     BAIL("Failed to allocate memory for Document");
   }
   
   strcpy(doc->filename, doc_filename);
+  strcpy(doc->data, doc_data);
   doc->key = chord_hash(doc_filename);
   
   node_document_add(node, doc);
 }
 
 void do_document_query() {
+  Node *ctx_node;
+  char *prompt = "Enter document filename: ";
+  char doc_filename[FILENAME_MAX_LENGTH];
+  
+  ctx_node = do_node_get("Select node to perform search from: ");
+  
+  getString(doc_filename, FILENAME_MAX_LENGTH, prompt);
+  
+  node_document_query(ctx_node, doc_filename);
+  
+ 
 }
 
 void do_ring_print() {

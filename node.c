@@ -162,6 +162,45 @@ void node_document_store(Node *node, Document *doc) {
   printf("Document \"%s\" with key %d added to node %s:%d\n", doc->filename, doc->key, node->id, node->key);
 }
 
+void node_document_query(Node *ctx_node, char *filename) {
+  int key;
+  Node *doc_node;
+  Document *doc = NULL;
+  
+  key = chord_hash(filename);
+  
+  doc_node = node_find_successor(ctx_node, key);
+  
+  doc = node_document_exists(doc_node, filename);
+  
+  printf("\n");
+  
+  if (doc != NULL) {
+    printf("Document found. Displaying data...\n");
+    node_document_print(doc_node, doc);
+  }
+  else {
+    printf("Document not found.\n");
+  }
+}
+
+void node_document_print(Node *node, Document *doc) {
+  printf("Filename: %s\n", doc->filename);
+  printf("Data:\n %s\n", doc->data);
+}
+
+Document* node_document_exists(Node *node, char *filename) {
+  int i;
+  
+  for (i = 0; i < node->num_documents; i++) {
+    if (strcmp(filename, node->documents[i]->filename) == 0) {
+      return node->documents[i];
+    }
+  }
+  
+  return NULL;
+}
+
 void node_print(Node *node) {
   int predecessor, successor;
   

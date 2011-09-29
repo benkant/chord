@@ -72,6 +72,7 @@ typedef struct Node {
 typedef struct Document {
   char filename[FILENAME_MAX_LENGTH];
   int key;
+  char data[TEMP_STRING_LENGTH];
 } Document;
 
 /* Chord Ring */
