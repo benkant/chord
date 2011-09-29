@@ -145,7 +145,7 @@ void node_document_add(Node *node, Document *doc) {
   Node *target;
   
   target = node_find_successor(node, doc->key);
-  node_document_store(node, doc);
+  node_document_store(target, doc);
 }
 
 /**
@@ -155,8 +155,11 @@ void node_document_store(Node *node, Document *doc) {
   if ((node->documents = realloc(node->documents, (sizeof(struct Document*) * node->num_documents + 1))) == NULL) {
     BAIL("Failed to allocate memory for node documents");
   }
+  
   node->documents[node->num_documents] = doc;
   node->num_documents++;
+  
+  printf("Document \"%s\" with key %d added to node %s:%d\n", doc->filename, doc->key, node->id, node->key);
 }
 
 void node_print(Node *node) {
@@ -164,18 +167,26 @@ void node_print(Node *node) {
   
   predecessor = node->predecessor != NULL ? node->predecessor->key : 0;
   successor = node->successor != NULL ? node->successor->key : 0;
-  
-  printf("Key: %d, ID: %s", node->key, node->id);
-  printf("\tPredecessor: %d, successor: %d\n", predecessor, successor);
+
+  printf("%-4d %-11s %5d %5d %7d\n", node->key, node->id, predecessor, successor, node->num_documents);
 }
 
 void node_print_documents(Node *node) {
   int i;
   Document *doc;
   
-  for (i = 0; i < node->num_documents; i++) {
-    doc = node->documents[i];
-    printf("%d) %s (key: %d)\n", i, doc->filename, doc->key);
+  if (node->num_documents == 0) {
+    printf("\nNo documents at this node.\n");
+  }
+  else {
+    printf("\n");
+    printf("%-3s %-4s %-16s\n", "i", "Key", "Filename");
+    printf("--- ---- ----------------\n");
+    for (i = 0; i < node->num_documents; i++) {
+      doc = node->documents[i];
+      printf("%-3d %-4d %s\n", i, doc->key, doc->filename);
+    }
+    printf("--- ---- ----------------\n");
   }
 }
 
@@ -183,8 +194,13 @@ void node_print_finger_table(Node *node) {
   int i;
   Finger *finger = NULL;
   
+  printf("\n");
+  printf("%-3s %-6s %-16s\n", "i", "Start", "Succ (ID:Key)");
+  printf("--- ------ ----------------\n");
+  
   for (i = 0; i < KEY_BITS; i++) {
     finger = node->finger_table->fingers[i];
-    printf("i: %d, node_id: %s, start: %d\n", i, finger->node->id, finger->start);
+    printf("%-3d %-6d %10s : %-4d\n", i, finger->start, finger->node->id, finger->node->key);
   }
+  printf("--- ------ ----------------\n");
 }

@@ -195,22 +195,26 @@ void ring_print(int index, int with_fingers) {
   
   current = ring->first_node;
   
+  if (index) {
+    printf("%-4s %-4s %-11s %-5s %-5s %-7s\n", "Idx", "Key", "ID", "Pred", "Succ", "# Docs");
+    printf("---- ---- ----------- ----- ----- -------\n");
+  }
+  if (!index) {
+    printf("%-4s %-11s %-5s %-5s %-7s\n", "Key", "ID", "Pred", "Succ", "# Docs");
+    printf("---- ----------- ----- ----- -------\n");
+  }
+  
   while (current != NULL) {
     i++;
    
-  /*
-  for (i = 0; i < ring->size; i++) {
-    current = ring->nodes[i];
-   */
     if (index) {
-      printf("%d) ", i);
+      printf("%-4d ", i);
     }
     node_print(current);
     if (with_fingers) {
       node_print_finger_table(current);
     }
-    
-    
+      
     current = current->successor != current ? current->successor : NULL;
     
     if (done_first && current == ring->first_node) {
