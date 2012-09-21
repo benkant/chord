@@ -52,6 +52,7 @@ printf("DEBUG: %s %s\n", x, y); \
 /* Foo widget */
 typedef struct FooWidget {
   long widget_id;
+  long foo_count;
 } FooWidget;
 
 /* Finger and FingerTable */
