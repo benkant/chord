@@ -44,7 +44,14 @@ void do_node_add_random(int num);
 int main(int argc, char *argv[]) {
   do_main_menu();
 
-  FooWidget *fw;
+  FooWidget *fw = NULL;
+
+  if ((fw = malloc(sizeof(FooWidget))) == NULL) {
+    BAIL("Failed to allocate memory for FooWidget");
+  }
+
+  fw->widget_id = 0;
+  fw->foo_count = 0;
 
   return EXIT_SUCCESS;
 }
