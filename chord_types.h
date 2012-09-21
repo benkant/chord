@@ -49,6 +49,11 @@ printf("DEBUG: %s %s\n", x, y); \
 #define MIN(a,b) ((a)>(b)?(b):(a))
 #define MAX(a,b) ((a)>(b)?(a):(b))
 
+/* Foo widget */
+typedef struct FooWidget {
+  int widget_id;
+} FooWidget;
+
 /* Finger and FingerTable */
 typedef struct Finger {
   struct Node *node;

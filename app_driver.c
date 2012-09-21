@@ -44,6 +44,8 @@ void do_node_add_random(int num);
 int main(int argc, char *argv[]) {
   do_main_menu();
 
+  FooWidget *fw;
+
   return EXIT_SUCCESS;
 }
 
