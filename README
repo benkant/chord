@@ -9,3 +9,13 @@ https://pdos.csail.mit.edu/papers/ton:chord/paper-ton.pdf
 This implementation does not operate in a network environment and is a simulation.
 
 The simulation requirements are to use an 8-bit keyspace, so a very simple hashing function is used. To use a larger keyspace it would be trivial to swap out the hash function with something like SHA.
+
+Building
+========
+
+Run the following commands from the repository root:
+
+* `make` – build the main `chord` binary.
+* `make debug` – build a debug version called `chord_debug`.
+* `make clean` – remove build artifacts.
+* `make archive` – create `chord.zip` with sources and README.
