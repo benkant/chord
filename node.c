@@ -1,4 +1,5 @@
 #include "node.h"
+#include <string.h>
 
 Node* node_init(char *id) {
   Node *node = NULL;
@@ -140,7 +141,8 @@ void node_fix_fingers(Node *node) {
 }
 
 void node_check_predecessor(Node *node) {
-  if (node->predecessor->state == NODE_STATE_DEAD) {
+  if (node->predecessor != NULL &&
+      node->predecessor->state == NODE_STATE_DEAD) {
     node->predecessor = NULL;
   }
 }
@@ -161,7 +163,8 @@ void node_document_add(Node *node, Document *doc) {
  * Store a document at this node
  */
 void node_document_store(Node *node, Document *doc) {
-  if ((node->documents = realloc(node->documents, (sizeof(struct Document*) * node->num_documents + 1))) == NULL) {
+  if ((node->documents = realloc(node->documents,
+                                 sizeof(Document*) * (node->num_documents + 1))) == NULL) {
     BAIL("Failed to allocate memory for node documents");
   }
   

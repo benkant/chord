@@ -6,7 +6,7 @@ CC=gcc -ansi -Wall -pedantic
 LN=-lm
 
 all: finger.o hash.o key.o node.o ring.o util.o app_driver.o
-	$(CC) finger.o hash.o key.o ring.o app_driver.o util.o $(LN) -o chord
+	$(CC) finger.o hash.o key.o node.o ring.o app_driver.o util.o $(LN) -o chord
 
 finger.o:
 	$(CC) -c finger.c
