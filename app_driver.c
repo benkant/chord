@@ -309,7 +309,7 @@ char* random_string(int length) {
   char *chars = "abcdef0123456789";
   
   /* allocate mem for random string */
-  if ((random = malloc(sizeof(char) * length)) == NULL) {
+  if ((random = malloc(sizeof(char) * (length + 1))) == NULL) {
     BAIL("Failed to allocate memory for random string");
   }
   
@@ -317,6 +317,8 @@ char* random_string(int length) {
     c = (int) (rand() % strlen(chars));
     random[i] = chars[c];
   }
-  
+
+  random[length] = '\0';
+
   return random;
 }

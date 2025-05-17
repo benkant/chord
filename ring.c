@@ -115,7 +115,6 @@ void ring_insert_after(Node *after_node, Node *node) {
 }
 
 int ring_size() {
-  Node *current = NULL;
   Ring *ring = ring_get();
   
   /*
@@ -147,19 +146,18 @@ int ring_key_max() {
 
 void ring_add(Node *node) {
   num_nodes++;
-  
+
   if ((nodes = realloc(nodes, sizeof(void*) * num_nodes)) == NULL) {
     BAIL("Failed to realloc rings array");
   }
-      
-  nodes[num_nodes] = node;
+
+  nodes[num_nodes - 1] = node;
 }
 
 void ring_stabilise_all() {
   Node *current = NULL;
   Ring *ring = ring_get();
   int i = 0;
-  int done_first = 0;
   
   /*
   current = ring->first_node;
@@ -228,18 +226,28 @@ void ring_print(int index, int with_fingers) {
   }
 }
 
-void ring_print_all() {
+void ring_print_all(int index, int with_fingers) {
   Node *current = NULL;
   Ring *ring = ring_get();
-  int i = 0; 
-  
-  printf("%-4s %-11s %-5s %-5s %-7s\n", "Key", "ID", "Pred", "Succ", "# Docs");
-  printf("---- ----------- ----- ----- -------\n");
-  
+  int i = 0;
+
+  if (index) {
+    printf("%-4s %-4s %-11s %-5s %-5s %-7s\n", "Idx", "Key", "ID", "Pred", "Succ", "# Docs");
+    printf("---- ---- ----------- ----- ----- -------\n");
+  } else {
+    printf("%-4s %-11s %-5s %-5s %-7s\n", "Key", "ID", "Pred", "Succ", "# Docs");
+    printf("---- ----------- ----- ----- -------\n");
+  }
+
   for (i = 0; i < ring->size; i++) {
     current = ring->nodes[i];
-
+    if (index) {
+      printf("%-4d ", i + 1);
+    }
     node_print(current);
+    if (with_fingers) {
+      node_print_finger_table(current);
+    }
   }
 }
 
