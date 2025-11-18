@@ -1,0 +1,3 @@
+[submodule "vendor/nng"]
+	path = vendor/nng
+	url = https://github.com/nanomsg/nng

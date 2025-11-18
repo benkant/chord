@@ -1,0 +1,36 @@
+# Build artifacts
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+
+# Executables
+chord
+chord_debug
+test_hash
+
+# Build directory
+build/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Sanitizer outputs
+*.dSYM/
+vgcore.*
+core
+core.*
+
+# Test outputs
+*.log
+*.trs
+
+# Temporary files
+*.tmp
+*.bak
