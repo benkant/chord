@@ -2,8 +2,8 @@
 #include <string.h>
 #include <stdint.h>
 #include "../chord_test.h"
-#include "../../hash.h"
-#include "../../chord_types.h"
+#include "../../src/core/hash.h"
+#include "../../src/core/chord_types.h"
 
 /*
  * Unit tests for hash.c - consistent hashing functions

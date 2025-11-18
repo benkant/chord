@@ -47,7 +47,7 @@ int getString(char* string, unsigned length, char* prompt)
     printf("%s", prompt);
     
     /* Accept input. "+2" is for the \n and \0 characters. */
-    fgets(tempString, length + 2, stdin);
+    fgets(tempString, (int)(length + 2), stdin);
     
     if (tempString[0] == '\n')
     {
@@ -111,7 +111,7 @@ int getInteger(int* integer, unsigned length, char* prompt, int min, int max)
     printf("%s", prompt);
     
     /* Accept input. "+2" is for the \n and \0 characters. */
-    fgets(tempString, length + 2, stdin);
+    fgets(tempString, (int)(length + 2), stdin);
     
     if (tempString[0] == '\n')
     {

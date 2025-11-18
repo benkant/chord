@@ -39,6 +39,7 @@ int key_in_range(int check, int bound1, int bound2, int half) {
 }
 
 int key_init(Node *node, int idx) {
+  (void)node;  /* Unused parameter - TODO: implement or remove */
   /* @TODO: what is this supposed to do? */
   return idx;
 }

@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "chord_types.h"
-#include "ring.h"
-#include "util.h"
+#include "../core/chord_types.h"
+#include "../core/ring.h"
+#include "../util/util.h"
 
 /**
  * @TODO:
@@ -33,7 +33,7 @@ void do_node_add();
 void do_node_print();
 void do_node_leave();
 void do_node_fail();
-Node *do_node_get();
+Node *do_node_get(char *prompt);
 void do_document_add();
 void do_document_query();
 void do_ring_print();
@@ -42,9 +42,10 @@ void do_fix_fingers();
 void do_node_add_random(int num);
 
 int main(int argc, char *argv[]) {
+  (void)argc;  /* Unused parameter */
+  (void)argv;  /* Unused parameter */
+  
   do_main_menu();
-
-  FooWidget *fw;
 
   return EXIT_SUCCESS;
 }
@@ -309,12 +310,12 @@ char* random_string(int length) {
   char *chars = "abcdef0123456789";
   
   /* allocate mem for random string */
-  if ((random = malloc(sizeof(char) * length)) == NULL) {
+  if ((random = malloc(sizeof(char) * (size_t)length)) == NULL) {
     BAIL("Failed to allocate memory for random string");
   }
   
   for (i = 0; i < length; i++) {
-    c = (int) (rand() % strlen(chars));
+    c = (int) ((unsigned int)rand() % strlen(chars));
     random[i] = chars[c];
   }
   

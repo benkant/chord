@@ -161,7 +161,7 @@ void node_document_add(Node *node, Document *doc) {
  * Store a document at this node
  */
 void node_document_store(Node *node, Document *doc) {
-  if ((node->documents = realloc(node->documents, (sizeof(struct Document*) * node->num_documents + 1))) == NULL) {
+  if ((node->documents = realloc(node->documents, (sizeof(struct Document*) * (size_t)(node->num_documents + 1)))) == NULL) {
     BAIL("Failed to allocate memory for node documents");
   }
   
@@ -194,6 +194,7 @@ void node_document_query(Node *ctx_node, char *filename) {
 }
 
 void node_document_print(Node *node, Document *doc) {
+  (void)node;  /* Unused parameter */
   printf("Filename: %s\n", doc->filename);
   printf("Data:\n %s\n", doc->data);
 }

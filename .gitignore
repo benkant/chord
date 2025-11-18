@@ -24,8 +24,8 @@ build/
 # Sanitizer outputs
 *.dSYM/
 vgcore.*
-core
-core.*
+/core
+/core.*
 
 # Test outputs
 *.log

@@ -1,15 +1,15 @@
 #include <math.h>
 #include "ring.h"
 
-static Ring *ring;
-static Node **nodes;
-static int num_nodes = 0;
+static Ring *g_ring;
+static Node **g_nodes;
+static int g_num_nodes = 0;
 
 Node* ring_get_node(int idx) {
   Node *current = NULL;
   int i = 0;
   
-  current = ring->first_node;
+  current = g_ring->first_node;
   while (current != NULL) {
     i++;
     if (idx == i) {
@@ -37,17 +37,17 @@ void ring_create_node(char *node_id) {
 
 void ring_insert(Node *node) {
   Node *current = NULL;
-  Ring *ring = ring_get();
+  Ring *r = ring_get();
   
-  if (ring->first_node == NULL) {
-    ring->first_node = node;
-    ring->last_node = node;
+  if (r->first_node == NULL) {
+    r->first_node = node;
+    r->last_node = node;
     
     node->predecessor = NULL;
     node->successor = NULL;
   }
   else {
-    current = ring->first_node;
+    current = r->first_node;
     /* insert the node into the doubly linked list
      * while maintaining sort order. First get the
      * node we will insert after.
@@ -87,12 +87,12 @@ void ring_insert(Node *node) {
 }
 
 void ring_insert_before(Node *before_node, Node *node) {
-  Ring *ring = ring_get();
+  Ring *r = ring_get();
   
   node->predecessor = before_node->predecessor;
   node->successor = before_node;
   if (before_node->predecessor == NULL) {
-    ring->first_node = node;
+    r->first_node = node;
   }
   else {
     before_node->predecessor->successor = node;
@@ -101,12 +101,12 @@ void ring_insert_before(Node *before_node, Node *node) {
 }
 
 void ring_insert_after(Node *after_node, Node *node) {
-  Ring *ring = ring_get();
+  Ring *r = ring_get();
   
   node->predecessor = after_node;
   node->successor = after_node->successor;
   if (after_node->successor == NULL) {
-    ring->last_node = node;
+    r->last_node = node;
   }
   else {
     after_node->successor->predecessor = node;
@@ -115,60 +115,29 @@ void ring_insert_after(Node *after_node, Node *node) {
 }
 
 int ring_size() {
-  Node *current = NULL;
-  Ring *ring = ring_get();
-  
-  /*
-  int size = 0;
-  int done_first = 0;
-  
-  current = ring->first_node;
-  
-  while (current != NULL) {
-    size++;
-    current = current->successor != current ? current->successor : NULL;
-
-    if (done_first && current == ring->first_node) {
-      current = NULL;
-    }
-    
-    if (!done_first) {
-      done_first = 1;
-    }
-  }
-   */
-  
-  return ring->size;
+  Ring *r = ring_get();
+  return (int)r->size;
 }
 
 int ring_key_max() {
-  return pow(2, KEY_BITS);
+  return (int)pow(2, KEY_BITS);
 }
 
 void ring_add(Node *node) {
-  num_nodes++;
+  g_num_nodes++;
   
-  if ((nodes = realloc(nodes, sizeof(void*) * num_nodes)) == NULL) {
+  if ((g_nodes = realloc(g_nodes, sizeof(void*) * (size_t)g_num_nodes)) == NULL) {
     BAIL("Failed to realloc rings array");
   }
       
-  nodes[num_nodes] = node;
+  g_nodes[g_num_nodes] = node;
 }
 
 void ring_stabilise_all() {
-  Node *current = NULL;
-  Ring *ring = ring_get();
-  int i = 0;
-  int done_first = 0;
+  Ring *r = ring_get();
   
-  /*
-  current = ring->first_node;
-  
-  while (current != NULL) {
-    i++;
-*/
-  for (i = 0; i < ring->size; i++) {
-    current = ring->nodes[i];
+  for (unsigned int i = 0; i < r->size; i++) {
+    Node *current = r->nodes[i];
     node_stabilise(current);
     node_fix_fingers(current);
     
@@ -187,13 +156,11 @@ void ring_stabilise_all() {
 }
 
 void ring_print(int index, int with_fingers) {
-  Node *current = NULL;
-  Ring *ring = ring_get();
+  Ring *r = ring_get();
   int i = 0;
   int done_first = 0;
   
-  
-  current = ring->first_node;
+  Node *current = r->first_node;
   
   if (index) {
     printf("%-4s %-4s %-11s %-5s %-5s %-7s\n", "Idx", "Key", "ID", "Pred", "Succ", "# Docs");
@@ -217,7 +184,7 @@ void ring_print(int index, int with_fingers) {
       
     current = current->successor != current ? current->successor : NULL;
     
-    if (done_first && current == ring->first_node) {
+    if (done_first && current == r->first_node) {
       current = NULL;
     }
     
@@ -229,9 +196,7 @@ void ring_print(int index, int with_fingers) {
 }
 
 void ring_print_all(int index, int with_fingers) {
-  Node *current = NULL;
-  Ring *ring = ring_get();
-  int i = 0;
+  Ring *r = ring_get();
 
   if (index) {
     printf("%-4s %-4s %-11s %-5s %-5s %-7s\n", "Idx", "Key", "ID", "Pred", "Succ", "# Docs");
@@ -242,11 +207,11 @@ void ring_print_all(int index, int with_fingers) {
     printf("---- ----------- ----- ----- -------\n");
   }
 
-  for (i = 0; i < ring->size; i++) {
-    current = ring->nodes[i];
+  for (unsigned int i = 0; i < r->size; i++) {
+    Node *current = r->nodes[i];
 
     if (index) {
-      printf("%-4d ", i + 1);
+      printf("%-4d ", (int)(i + 1));
     }
     node_print(current);
     if (with_fingers) {
@@ -257,16 +222,16 @@ void ring_print_all(int index, int with_fingers) {
 
 
 Ring *ring_get() {
-  if (ring == NULL) {
+  if (g_ring == NULL) {
     D1("Ring is NULL, creating");
     
-    if ((ring = malloc(sizeof(Ring))) == NULL) {
+    if ((g_ring = malloc(sizeof(Ring))) == NULL) {
       BAIL("Failed to allocate memory for Ring");
     }
     
-    ring->size = 0;
-    ring->first_node = NULL;
+    g_ring->size = 0;
+    g_ring->first_node = NULL;
   }
   
-  return ring;
+  return g_ring;
 }
