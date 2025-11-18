@@ -1,9 +1,10 @@
 #include "hash.h"
 
 int chord_hash(char *string) {
-  int i, hash = 0;
+  size_t len = strlen(string);
+  int hash = 0;
   
-  for (i = 0; i < strlen(string); i++) {
+  for (size_t i = 0; i < len; i++) {
     hash = hash * 31 + string[i];
   }
   
