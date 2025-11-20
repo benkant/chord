@@ -8,23 +8,30 @@ CFLAGS=-std=c2x -Wall -Wextra -Wpedantic -Werror \
 CFLAGS_DEBUG=-g -O0 -fsanitize=address,undefined
 CFLAGS_RELEASE=-O3 -DNDEBUG
 LDFLAGS=-lm
-INCLUDES=-Isrc/core -Isrc/util -Isrc/app
+INCLUDES=-Isrc/core -Isrc/util -Isrc/app -Isrc/net
 
 # Source files (new structure)
 SRC_CORE=src/core/hash.c src/core/key.c src/core/ring.c src/core/finger.c src/core/node.c
+SRC_NET=src/net/net_peer.c
 SRC_UTIL=src/util/util.c
 SRC_APP=src/app/app_driver.c
 OBJS_CORE=$(SRC_CORE:.c=.o)
+OBJS_NET=$(SRC_NET:.c=.o)
 OBJS_UTIL=$(SRC_UTIL:.c=.o)
 OBJS_APP=$(SRC_APP:.c=.o)
-OBJS=$(OBJS_CORE) $(OBJS_UTIL) $(OBJS_APP)
+OBJS=$(OBJS_CORE) $(OBJS_NET) $(OBJS_UTIL) $(OBJS_APP)
 
 # Test files
 TEST_HASH=build/tests/unit/test_hash
 TEST_KEY=build/tests/unit/test_key
 TEST_RING=build/tests/unit/test_ring
+TEST_NET_PEER=build/tests/unit/test_net_peer
+TEST_TWO_NODE=build/tests/integration/test_two_node_join
 
-.PHONY: all debug release test clean help
+# Fake implementations for testing
+FAKE_PEER=tests/fakes/fake_peer.c
+
+.PHONY: all debug release test test-unit test-integration clean help
 
 all: chord
 
@@ -42,10 +49,20 @@ chord: $(OBJS)
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
+# All tests
+test: test-unit test-integration
+	@echo ""
+	@echo "=== All tests passed ==="
+
 # Unit tests
-test: test-hash test-key test-ring
+test-unit: test-hash test-key test-ring test-net-peer
 	@echo ""
 	@echo "=== All unit tests passed ==="
+
+# Integration tests
+test-integration: test-two-node
+	@echo ""
+	@echo "=== All integration tests passed ==="
 
 test-hash: $(TEST_HASH)
 	@echo "Running hash unit tests..."
@@ -59,6 +76,14 @@ test-ring: $(TEST_RING)
 	@echo "Running ring unit tests..."
 	@./$(TEST_RING)
 
+test-net-peer: $(TEST_NET_PEER)
+	@echo "Running net_peer unit tests..."
+	@./$(TEST_NET_PEER)
+
+test-two-node: $(TEST_TWO_NODE)
+	@echo "Running two-node integration test..."
+	@./$(TEST_TWO_NODE)
+
 $(TEST_HASH): tests/unit/test_hash.c $(OBJS_CORE) $(OBJS_UTIL)
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) $(CFLAGS_DEBUG) $(INCLUDES) $^ $(LDFLAGS) -o $@
@@ -68,6 +93,14 @@ $(TEST_KEY): tests/unit/test_key.c $(OBJS_CORE) $(OBJS_UTIL)
 	$(CC) $(CFLAGS) $(CFLAGS_DEBUG) $(INCLUDES) $^ $(LDFLAGS) -o $@
 
 $(TEST_RING): tests/unit/test_ring.c $(OBJS_CORE) $(OBJS_UTIL)
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) $(CFLAGS_DEBUG) $(INCLUDES) $^ $(LDFLAGS) -o $@
+
+$(TEST_NET_PEER): tests/unit/test_net_peer.c $(OBJS_NET) $(FAKE_PEER)
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) $(CFLAGS_DEBUG) $(INCLUDES) $^ $(LDFLAGS) -o $@
+
+$(TEST_TWO_NODE): tests/integration/test_two_node_join.c $(OBJS_CORE) $(OBJS_UTIL)
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) $(CFLAGS_DEBUG) $(INCLUDES) $^ $(LDFLAGS) -o $@
 

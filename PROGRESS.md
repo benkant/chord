@@ -92,6 +92,58 @@ Major refactoring to implement the layered architecture:
 
 **Test Results:** 15/15 passing ✓ (6 hash + 6 key + 3 ring)
 
+### Step 4: Network Layer Design and Testing Infrastructure ✅
+**Commit:** (pending)
+
+Implemented network layer interfaces and comprehensive testing infrastructure:
+
+- **Network Layer Interfaces:**
+  - `src/net/net_protocol.h`: Wire format definitions
+    - Message types for all Chord RPCs (find_successor, notify, etc.)
+    - Error codes and versioning
+    - Node address structure (replaces Node* for remote references)
+    - Fixed-size headers with JSON payloads
+  - `src/net/net_peer.h`: High-level peer abstraction
+    - Interface vtable pattern for testability
+    - Sync/async RPC operations
+    - Chord-specific RPC helpers (find_successor, notify, ping, etc.)
+  - `src/net/net_transport.h`: Raw network I/O abstraction
+    - Transport types (TCP, IPC, FAKE)
+    - Client and server-side operations
+    - Timeout support
+
+- **Fake Network Implementation:**
+  - `tests/fakes/fake_peer.c/h`: In-memory peer for unit tests
+    - Canned response configuration
+    - Request/response history recording
+    - Error and timeout injection
+    - 9 unit tests covering all RPC operations
+  - `src/net/net_peer.c`: Peer API implementation
+    - Calls through interface vtable
+    - High-level Chord RPC helpers
+
+- **Integration Test Infrastructure:**
+  - `tests/chord_integration.h`: Test harness inspired by NNG's nuts.h
+    - Node lifecycle management
+    - Ring creation and join helpers
+    - Stabilization helpers
+    - Ring invariant checking
+  - `tests/integration/test_two_node_join.c`: First integration test
+    - Single-node ring formation
+    - Two-node join operation
+    - Stabilization verification
+    - Key ordering validation
+    - 4 integration tests passing
+
+- **NNG Library:**
+  - Built successfully in `vendor/nng/build/`
+  - Shared library: `libnng.so.2.0.0-dev`
+  - Ready for real network transport implementation
+
+**Test Results:** 28/28 passing ✓
+- Unit tests: 24/24 (6 hash + 6 key + 3 ring + 9 net_peer)
+- Integration tests: 4/4 (two-node join scenarios)
+
 ## Current State
 
 ### Directory Structure
@@ -155,33 +207,26 @@ Total: 3, Passed: 3, Failed: 0 ✓
 
 ## Next Steps
 
-### Immediate (Next Session)
-1. ~~**Fix existing warnings** in legacy code to re-enable `-Werror`~~ ✅ DONE
-2. ~~**Create directory structure**~~ ✅ DONE
-3. ~~**Migrate core files** to new structure~~ ✅ DONE
-4. ~~**Write more unit tests**~~ ✅ DONE (hash, key, ring)
+### Completed ✅
+1. ~~**Fix existing warnings** in legacy code to re-enable `-Werror`~~ ✅
+2. ~~**Create directory structure**~~ ✅
+3. ~~**Migrate core files** to new structure~~ ✅
+4. ~~**Write more unit tests**~~ ✅ (hash, key, ring)
+5. ~~**Design network layer interfaces**~~ ✅ (protocol, peer, transport)
+6. ~~**Implement fake network layer for unit tests**~~ ✅ (fake_peer with 9 tests)
+7. ~~**Build nng library**~~ ✅ (libnng.so.2.0.0-dev)
+8. ~~**Create first integration test**~~ ✅ (two-node join with 4 tests)
 
-### Short-term (This Week)
-5. **Design network layer interfaces**
-   - Create `src/net/net_protocol.h` - wire format definitions
-   - Create `src/net/net_peer.h` - peer abstraction interface
-   - Create `src/net/net_transport.h` - transport layer interface
+### Short-term (Next Session)
+9. **Implement network transport layer**
+   - `src/net/net_transport.c` - NNG socket wrapper
+   - `src/net/net_protocol.c` - message serialization/deserialization
+   - Support TCP and IPC transports
 
-6. **Implement fake network layer for unit tests**
-   - `tests/fakes/fake_peer.c` - in-memory peer for testing
-   - Update node tests to use fake peers
-
-7. **Build nng library**
-   ```bash
-   cd vendor/nng
-   mkdir build && cd build
-   cmake .. && make
-   ```
-
-8. **Create first integration test**
-   - `tests/integration/test_two_node_join.c`
-   - Use test harness helpers
-   - Verify basic ring formation
+10. **Implement RPC server**
+    - `src/net/rpc_server.c` - request handler thread
+    - Dispatch incoming RPCs to node operations
+    - Handle all 8 Chord message types
 
 ### Medium-term (Next 2 Weeks)
 9. **Implement network transport layer**
@@ -212,10 +257,13 @@ From `NETWORK_DESIGN.md`:
 
 ## Metrics
 
-- **Lines of test code:** ~450 (test framework + hash/key/ring tests)
-- **Test coverage:** 3 modules (hash.c, key.c, ring.c) with 15 tests total
-- **Build time:** ~2 seconds for full rebuild
-- **Test execution time:** <100ms for all unit tests
+- **Lines of test code:** ~1200 (framework + unit tests + integration tests + fakes)
+- **Test coverage:** 
+  - Core modules: hash.c, key.c, ring.c (15 tests)
+  - Network layer: net_peer.c with fake implementation (9 tests)
+  - Integration: two-node ring formation (4 tests)
+- **Build time:** ~3 seconds for full rebuild
+- **Test execution time:** <200ms for all tests (unit + integration)
 - **Compiler warnings:** 0 (all fixed, -Werror enabled)
 
 ## Resources
